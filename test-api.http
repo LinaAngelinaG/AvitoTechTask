@@ -1,0 +1,58 @@
+
+###
+POST http://localhost:1234/user/segments/10
+Content-Type: application/json
+
+{}
+
+> {%
+client.test("Request executed successfully", function (){
+    client.assert(response.status == 201, "Response status is not 201")
+})
+ %}
+###
+GET http://localhost:1234/user/1
+Accept: application/json
+
+> {%
+    client.test("Request executed successfully", function (){
+        client.assert(response.status == 200, "Response status is not 200")
+    })
+%}
+###
+
+DELETE http://localhost:1234/user/segments/10
+Content-Type: application/json
+
+{}
+
+> {%
+    client.test("Request executed successfully", function (){
+        client.assert(response.status == 204, "Response status is not 204")
+    })
+%}
+###
+
+DELETE http://localhost:1234/segment/AVITO_VOICE_MESSAGES
+Content-Type: application/json
+
+{}
+
+> {%
+    client.test("Request executed successfully", function (){
+        client.assert(response.status == 204, "Response status is not 204")
+    })
+%}
+###
+
+POST http://localhost:1234/segment/AVITO_VOICE_MESSAGES
+Content-Type: application/json
+
+{}
+
+> {%
+    client.test("Request executed successfully", function (){
+        client.assert(response.status == 201, "Response status is not 201")
+    })
+%}
+###
