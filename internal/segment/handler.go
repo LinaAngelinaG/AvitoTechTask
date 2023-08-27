@@ -2,6 +2,7 @@ package segment
 
 import (
 	"AvitoTechTask/internal/handlers"
+	"AvitoTechTask/pkg/logging"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
@@ -11,10 +12,14 @@ const (
 )
 
 type handler struct {
+	logger *logging.Logger
 }
 
-func NewHandler() handlers.Handler {
-	return &handler{}
+func NewHandler(l *logging.Logger) handlers.Handler {
+	l.Info("register segment handler")
+	return &handler{
+		logger: l,
+	}
 }
 
 func (h *handler) Register(router *httprouter.Router) {

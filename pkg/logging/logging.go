@@ -15,12 +15,12 @@ type Logger struct {
 	*logrus.Entry
 }
 
-func GetLogger() Logger {
-	return Logger{e}
+func GetLogger() *Logger {
+	return &Logger{e}
 }
 
-func (logger *Logger) GetLoggerWithField(k string, v interface{}) Logger {
-	return Logger{logger.WithField(k, v)}
+func (logger *Logger) GetLoggerWithField(k string, v interface{}) *Logger {
+	return &Logger{logger.WithField(k, v)}
 }
 
 type hookWriter struct {
