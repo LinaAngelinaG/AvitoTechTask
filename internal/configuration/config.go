@@ -13,6 +13,13 @@ type Config struct {
 		BindIp string `yaml:"bind_ip" env-default:"127.0.0.1"`
 		Port   string `yaml:"port" env-default:"8080"`
 	} `yaml:"listen"`
+	Storage struct {
+		Host     string `yaml:"host"`
+		Port     string `yaml:"port"`
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
+		Database string `yaml:"database"`
+	} `yaml:"storage"`
 }
 
 var instance *Config
