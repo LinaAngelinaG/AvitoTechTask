@@ -4,7 +4,9 @@ import (
 	"AvitoTechTask/internal/configuration"
 	"AvitoTechTask/internal/segment"
 	"AvitoTechTask/internal/userinsegment"
+	postgresql "AvitoTechTask/pkg/client/postgres"
 	"AvitoTechTask/pkg/logging"
+	"context"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"log"
@@ -21,8 +23,19 @@ func main() {
 	router := httprouter.New()
 	config := configuration.GetConfig(logger)
 
+	startRepositories(logger, config)
+
 	registerHandlers(router, logger)
 	start(router, logger, config)
+}
+
+func startRepositories(logger *logging.Logger, config *configuration.Config) {
+	postgreSQLClient, err := postgresql.NewClient(context.TODO(), 3, config)
+	if err != nil {
+		logger.Fatalf("%v", err)
+	}
+	logger.Info("postgres client successfully connected")
+
 }
 
 func registerHandlers(router *httprouter.Router, logger *logging.Logger) {

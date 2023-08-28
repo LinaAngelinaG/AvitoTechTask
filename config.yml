@@ -1,5 +1,4 @@
 
-
 is_debug: true
 listen:
   type: port
@@ -10,4 +9,4 @@ storage:
   port: 5432
   username: "postgres"
   password: "3846936720"
-  database: "dogcare"
+  database: "avitotechTask"

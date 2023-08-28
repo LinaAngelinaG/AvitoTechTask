@@ -5,3 +5,7 @@ type Segment struct {
 	SegmentName string `json:"segment_name"`
 	Active      bool   `json:"active"`
 }
+
+type SegmentDTO struct {
+	SegmentName string `json:"segment_name"`
+}
