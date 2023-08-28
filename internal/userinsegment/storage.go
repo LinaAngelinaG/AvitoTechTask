@@ -24,11 +24,9 @@ type Repository interface {
 //VALUES ($1, (SElECT segment_id FROM segment WHERE segment_name = $2), current_timestamp, $3)
 //
 //DeleteSegments::
-// UPDATE user_in_segment SET (out_date) = current_timestamp WHERE segment_id =
+//UPDATE user_in_segment SET out_date = current_timestamp WHERE segment_id =
 //(SELECT segment_id FROM segment WHERE segment_name = $1) AND user_id = $2
 //
-//UPDATE segment SET (active) =
-// (SELECT active FROM segment WHERE segment_name = $1)
 //
 //Get history for user:
 //SELECT * from user_in_segment WHERE user_id = $1

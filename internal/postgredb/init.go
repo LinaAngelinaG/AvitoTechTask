@@ -49,7 +49,7 @@ func createTables(db *sql.DB) {
 }
 
 func createIndexes(db *sql.DB) {
-	_, err := db.Exec("CREATE INDEX out_date_idx ON user_in_segment (out_date)")
+	_, err := db.Exec("CREATE INDEX IF NOT EXISTS out_date_idx ON user_in_segment (out_date)")
 	checkError(err)
 }
 
