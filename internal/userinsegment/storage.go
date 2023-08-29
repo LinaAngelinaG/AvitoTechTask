@@ -6,11 +6,11 @@ import (
 )
 
 type Repository interface {
-	AddSegments(ctx context.Context, user *UserInSegment, segmentName string) error
-	AddSegmentsWithPeriod(ctx context.Context, user *UserInSegment, segmentName string) error
-	DeleteFromSegment(ctx context.Context, user *UserInSegment) error
-	DeleteSegmentFromUsers(ctx context.Context, user *UserInSegment, segment *segment.Segment) error
-	GetSegments(ctx context.Context, user *UserInSegment) ([]segment.SegmentDTO, error)
+	AddSegments(ctx context.Context, user *UserDTO, segment *segment.SegmentDTO) error
+	AddSegmentsWithPeriod(ctx context.Context, user *UserDTO, segment *segment.SegmentDTO) error
+	DeleteFromSegment(ctx context.Context, user *UserInSegmentDTO) error
+	GetSegments(ctx context.Context, user *UserInSegment) (UserSegmentsList, error)
+	GetUserHistory(ctx context.Context, user *UserDTO) ([]UserInSegmentsHistory, error)
 }
 
 //GetSegments::

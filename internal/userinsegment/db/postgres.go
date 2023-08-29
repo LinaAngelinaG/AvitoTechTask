@@ -1,4 +1,4 @@
-package db
+package userinsegmentdb
 
 import (
 	"AvitoTechTask/internal/segment"
@@ -15,26 +15,39 @@ type repository struct {
 	logger *logging.Logger
 }
 
-func (r repository) DeleteSegmentFromUsers(ctx context.Context, user *userinsegment.UserInSegment, segment *segment.Segment) error {
-	q := `
-		UPDATE user_in_segment
-		SET out_date = current_timestamp
-		WHERE segment_id = $1
-		RETURNING out_date
+func (r repository) GetUserHistory(ctx context.Context, user *userinsegment.UserDTO) ([]userinsegment.UserInSegmentsHistory, error) {
+	qIn := `
+		SELECT segment_name 
+		FROM (SELECT segment_id AS s_id
+		      FROM user_in_segment
+			  WHERE user_id = $1
+			    AND (out_date IS NULL
+			             OR out_date > current_date)
+			  ) AS active_u_segments
+		    INNER JOIN segment ON s_id = segment.segment_id
 		`
-	r.logger.Tracef("SQL query: %s", db.QueryToString(q))
-	if err := r.client.QueryRow(ctx, q, segment.SegmentId).Scan(user.OutDate); err != nil {
-		if pgErr, ok := err.(*pgconn.PgError); ok {
-			r.logger.Errorf("SQL error: %s, details: %s, where: %s, code: %s, SQL-state: %s",
-				pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
-			return nil
-		}
-		return err
+	r.logger.Tracef("SQL query: %s", segmentdb.QueryToString(q))
+	rows, err := r.client.Query(ctx, q, user.UserId)
+	segments := userinsegment.UserSegmentsList{UserId: user.UserId, SegmentNames: []string{}}
+	if err != nil {
+		return segments, err
 	}
-	return nil
+	for rows.Next() {
+		var segName string
+		if err = rows.Scan(&segName); err != nil {
+			r.logger.Errorf("Something wrong with scanning segmentName from row of SQL-request")
+			return segments, err
+		}
+		segments.SegmentNames = append(segments.SegmentNames, segName)
+	}
+	if err = rows.Err(); err != nil {
+		r.logger.Errorf("Something wrong with getting rows of SQL-request")
+		return segments, err
+	}
+	return segments, nil
 }
 
-func (r repository) DeleteFromSegment(ctx context.Context, user *userinsegment.UserInSegment) error {
+func (r repository) DeleteFromSegment(ctx context.Context, user *userinsegment.UserInSegmentDTO) error {
 	q := `
 		UPDATE user_in_segment 
 		SET out_date = current_timestamp
@@ -42,10 +55,10 @@ func (r repository) DeleteFromSegment(ctx context.Context, user *userinsegment.U
               segment_id = (SELECT segment_id
                               FROM segment
                               WHERE segment_name = $2)
-		RETURNING out_date
 		`
-	r.logger.Tracef("SQL query: %s", db.QueryToString(q))
-	if err := r.client.QueryRow(ctx, q, user.UserId, user.SegmentId).Scan(user.OutDate); err != nil {
+
+	r.logger.Tracef("SQL query: %s", segmentdb.QueryToString(q))
+	if _, err := r.client.Query(ctx, q, user.UserId, user.SegmentName); err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			r.logger.Errorf("SQL error: %s, details: %s, where: %s, code: %s, SQL-state: %s",
 				pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
@@ -56,16 +69,16 @@ func (r repository) DeleteFromSegment(ctx context.Context, user *userinsegment.U
 	return nil
 }
 
-func (r repository) AddSegments(ctx context.Context, user *userinsegment.UserInSegment, segmentName string) error {
+func (r repository) AddSegments(ctx context.Context, user *userinsegment.UserDTO, segment *segment.SegmentDTO) error {
 	q := `
 		INSERT INTO user_in_segment
 		    (user_id, segment_id, in_date, out_date)
 		VALUES ($1, (SElECT segment_id FROM segment WHERE segment_name = $2),
         current_timestamp, DEFAULT)
-		RETURNING segment_id, in_date, out_date
 		`
-	r.logger.Tracef("SQL query: %s", db.QueryToString(q))
-	if err := r.client.QueryRow(ctx, q, user.UserId, segmentName).Scan(user.SegmentId, user.InDate, user.OutDate); err != nil {
+	r.logger.Tracef("SQL query: %s", segmentdb.QueryToString(q))
+
+	if _, err := r.client.Query(ctx, q, user.UserId, segment.SegmentName); err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			r.logger.Errorf("SQL error: %s, details: %s, where: %s, code: %s, SQL-state: %s",
 				pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
@@ -73,19 +86,19 @@ func (r repository) AddSegments(ctx context.Context, user *userinsegment.UserInS
 		}
 		return err
 	}
+
 	return nil
 }
 
-func (r repository) AddSegmentsWithPeriod(ctx context.Context, user *userinsegment.UserInSegment, segmentName string) error {
+func (r repository) AddSegmentsWithPeriod(ctx context.Context, user *userinsegment.UserDTO, segment *segment.SegmentDTO) error {
 	q := `
 		INSERT INTO user_in_segment
 		    (user_id, segment_id, in_date, out_date)
 		VALUES ($1, (SElECT segment_id FROM segment WHERE segment_name = $2),
-        current_timestamp, $3)
-		RETURNING segment_id, in_date, out_date
+        current_timestamp, current_timestamp + $3 * (interval '1 day'))
 		`
-	r.logger.Tracef("SQL query: %s", db.QueryToString(q))
-	if err := r.client.QueryRow(ctx, q, user.UserId, segmentName, user.OutDate).Scan(user.SegmentId, user.InDate, user.OutDate); err != nil {
+	r.logger.Tracef("SQL query: %s", segmentdb.QueryToString(q))
+	if _, err := r.client.Query(ctx, q, user.UserId, segment.SegmentName, user.Period); err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			r.logger.Errorf("SQL error: %s, details: %s, where: %s, code: %s, SQL-state: %s",
 				pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
@@ -96,28 +109,39 @@ func (r repository) AddSegmentsWithPeriod(ctx context.Context, user *userinsegme
 	return nil
 }
 
-func (r repository) GetSegments(ctx context.Context, user *userinsegment.UserInSegment) (segments []SegmentDTO, err error) {
+func (r repository) GetSegments(ctx context.Context, user *userinsegment.UserInSegment) (userinsegment.UserSegmentsList, error) {
 	q := `
 		SELECT segment_name 
 		FROM (SELECT segment_id AS s_id
 		      FROM user_in_segment
-			  WHERE user_id = 1000
+			  WHERE user_id = $1
 			    AND (out_date IS NULL
-			             OR out_date < current_date)
+			             OR out_date > current_date)
 			  ) AS active_u_segments
 		    INNER JOIN segment ON s_id = segment.segment_id
 		`
-	r.logger.Tracef("SQL query: %s", db.QueryToString(q))
-	rows, err := r.client.Query(ctx, q)
+	r.logger.Tracef("SQL query: %s", segmentdb.QueryToString(q))
+	rows, err := r.client.Query(ctx, q, user.UserId)
+	segments := userinsegment.UserSegmentsList{UserId: user.UserId, SegmentNames: []string{}}
 	if err != nil {
-		return nil, err
+		return segments, err
 	}
 	for rows.Next() {
-
+		var segName string
+		if err = rows.Scan(&segName); err != nil {
+			r.logger.Errorf("Something wrong with scanning segmentName from row of SQL-request")
+			return segments, err
+		}
+		segments.SegmentNames = append(segments.SegmentNames, segName)
 	}
+	if err = rows.Err(); err != nil {
+		r.logger.Errorf("Something wrong with getting rows of SQL-request")
+		return segments, err
+	}
+	return segments, nil
 }
 
-func NewDataBase(l *logging.Logger, c postgresql.Client) userinsegment.Repository {
+func NewRepository(l *logging.Logger, c postgresql.Client) userinsegment.Repository {
 	return &repository{
 		logger: l,
 		client: c,

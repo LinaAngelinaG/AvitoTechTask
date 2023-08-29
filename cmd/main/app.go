@@ -2,8 +2,11 @@ package main
 
 import (
 	"AvitoTechTask/internal/configuration"
+	"AvitoTechTask/internal/handlers"
 	"AvitoTechTask/internal/segment"
+	segmentdb "AvitoTechTask/internal/segment/db"
 	"AvitoTechTask/internal/userinsegment"
+	userinsegmentdb "AvitoTechTask/internal/userinsegment/db"
 	postgresql "AvitoTechTask/pkg/client/postgres"
 	"AvitoTechTask/pkg/logging"
 	"context"
@@ -15,38 +18,64 @@ import (
 	"time"
 )
 
+var logger *logging.Logger
+var segRepo segment.Repository
+var userRepo userinsegment.Repository
+var router *httprouter.Router
+var config *configuration.Config
+var userHandler handlers.Handler
+var segmentHandler handlers.Handler
+
 func main() {
 	//dbase := db.InitDB()
 	//defer dbase.Close()
-	logger := logging.GetLogger()
+	logger = logging.GetLogger()
 	logger.Info("create router")
-	router := httprouter.New()
-	config := configuration.GetConfig(logger)
+	router = httprouter.New()
+	config = configuration.GetConfig(logger)
 
-	startRepositories(logger, config)
+	startRepositories()
 
-	registerHandlers(router, logger)
-	start(router, logger, config)
+	registerHandlers()
+	start()
 }
 
-func startRepositories(logger *logging.Logger, config *configuration.Config) {
+func startRepositories() {
 	postgreSQLClient, err := postgresql.NewClient(context.TODO(), 3, config)
 	if err != nil {
 		logger.Fatalf("%v", err)
 	}
 	logger.Info("postgres client successfully connected")
+	segRepo = segmentdb.NewRepository(logger, postgreSQLClient)
+	userRepo = userinsegmentdb.NewRepository(logger, postgreSQLClient)
 
+	//////////-----------------------------------------------------------------------------------------------
+	//newSeg := segment.Segment{SegmentName: "AVITO_SEG_TEST_1"}
+	//err = segRepo.Create(context.TODO(), &newSeg)
+	//if err != nil {
+	//	logger.Fatalf("%v", err)
+	//}
+	//logger.Info(newSeg)
+	//err = segRepo.Create(context.TODO(), &segment.Segment{SegmentName: "AVITO_SEG_TEST_2"})
+	//if err != nil {
+	//	logger.Fatalf("%v", err)
+	//}
+	//
+	//err = userRepo.AddSegments(context.TODO(), &userinsegment.UserInSegment{UserId: 1000}, &segment.SegmentDTO{"AVITO_SEG_TEST_2"})
+	//if err != nil {
+	//	logger.Fatalf("%v", err)
+	//}
 }
 
-func registerHandlers(router *httprouter.Router, logger *logging.Logger) {
-	userHandler := userinsegment.NewHandler(logger)
+func registerHandlers() {
+	userHandler = userinsegment.NewHandler(logger, userRepo)
 	userHandler.Register(router)
 
-	segmentHandler := segment.NewHandler(logger)
+	segmentHandler = segment.NewHandler(logger, segRepo)
 	segmentHandler.Register(router)
 }
 
-func start(router *httprouter.Router, logger *logging.Logger, config *configuration.Config) {
+func start() {
 	logger.Info("start application")
 
 	logger.Info("listen tcp")

@@ -9,15 +9,20 @@ type UserInSegment struct {
 	OutDate   time.Time `json:"out_date"`
 }
 
-type UserInSegmentsWithPeriodDTO struct {
-	UserId      int      `json:"user_id"`
-	SegmentName []string `json:"segment_name"`
-	Period      int      `json:"period"`
+type UserInSegmentDTO struct {
+	UserId      int    `json:"user_id"`
+	SegmentName string `json:"segment_name"`
 }
 
-type UserSegmentsDTO struct {
-	UserId      int      `json:"user_id"`
-	SegmentName []string `json:"segment_name"`
+type UserDTO struct {
+	UserId int `json:"user_id"`
+	Period int `json:"period"`
+}
+
+type UserSegmentsList struct {
+	UserId       int      `json:"user_id"`
+	SegmentNames []string `json:"segment_list"`
+	Period       int      `json:"period"`
 }
 
 type UserInSegmentsHistory struct {
