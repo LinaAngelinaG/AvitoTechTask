@@ -1,12 +1,10 @@
 package userinsegment
 
-import "time"
-
 type UserInSegment struct {
-	UserId    int       `json:"user_id"`
-	SegmentId int       `json:"segment_id"`
-	InDate    time.Time `json:"in_date"`
-	OutDate   time.Time `json:"out_date"`
+	UserId    int    `json:"user_id"`
+	SegmentId int    `json:"segment_id"`
+	InDate    string `json:"in_date"`
+	OutDate   string `json:"out_date"`
 }
 
 type UserInSegmentDTO struct {
@@ -26,8 +24,8 @@ type UserSegmentsList struct {
 }
 
 type UserInSegmentsHistory struct {
-	UserId      int       `json:"user_id"`
-	SegmentName string    `json:"segment_name"`
-	Event       string    `json:"event"`
-	EventDate   time.Time `json:"event_date"`
+	UserId      int    `json:"user_id"`
+	SegmentName string `json:"segment_name"`
+	Event       string `json:"event"`
+	EventDate   string `json:"event_date"`
 }

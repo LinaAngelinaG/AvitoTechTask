@@ -15,36 +15,65 @@ type repository struct {
 	logger *logging.Logger
 }
 
-func (r repository) GetUserHistory(ctx context.Context, user *userinsegment.UserDTO) ([]userinsegment.UserInSegmentsHistory, error) {
-	qIn := `
-		SELECT segment_name 
-		FROM (SELECT segment_id AS s_id
-		      FROM user_in_segment
-			  WHERE user_id = $1
-			    AND (out_date IS NULL
-			             OR out_date > current_date)
-			  ) AS active_u_segments
-		    INNER JOIN segment ON s_id = segment.segment_id
+func (r repository) GetUserHistory(ctx context.Context, user *userinsegment.UserInSegment) (history []userinsegment.UserInSegmentsHistory, err error) {
+	q := `
+		SELECT in_date,
+		       (SELECT segment_name
+		        FROM segment
+		        WHERE user_in_segment.segment_id = segment.segment_id)
+		FROM user_in_segment
+		WHERE user_id = $1 
+		  AND in_date >= $2 
+		  AND in_date < $2 + interval '1 month'
 		`
-	r.logger.Tracef("SQL query: %s", segmentdb.QueryToString(q))
-	rows, err := r.client.Query(ctx, q, user.UserId)
-	segments := userinsegment.UserSegmentsList{UserId: user.UserId, SegmentNames: []string{}}
-	if err != nil {
-		return segments, err
+	history = make([]userinsegment.UserInSegmentsHistory, 0)
+
+	if err = r.addToHistory(q, "inserted", user, ctx, history); err != nil {
+		return history, err
 	}
-	for rows.Next() {
-		var segName string
-		if err = rows.Scan(&segName); err != nil {
-			r.logger.Errorf("Something wrong with scanning segmentName from row of SQL-request")
-			return segments, err
+	q = `
+		SELECT out_date,
+		       (SELECT segment_name
+		        FROM segment
+		        WHERE user_in_segment.segment_id = segment.segment_id)
+		FROM user_in_segment
+		WHERE user_id = $1 
+		  AND out_date >= $2 
+		  AND out_date < $2 + interval '1 month'
+		`
+	if err = r.addToHistory(q, "deleted", user, ctx, history); err != nil {
+		return history, err
+	}
+
+	return history, nil
+}
+
+func (r repository) addToHistory(q string, event string, user *userinsegment.UserInSegment, ctx context.Context, history []userinsegment.UserInSegmentsHistory) error {
+	r.logger.Tracef("SQL query: %s", segmentdb.QueryToString(q))
+	rows, err := r.client.Query(ctx, q, user.UserId, user.InDate)
+
+	if err != nil {
+		if pgErr, ok := err.(*pgconn.PgError); ok {
+			r.logger.Errorf("SQL error: %s, details: %s, where: %s, code: %s, SQL-state: %s",
+				pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
+			return nil
 		}
-		segments.SegmentNames = append(segments.SegmentNames, segName)
+		return err
+	}
+
+	for rows.Next() {
+		data := userinsegment.UserInSegmentsHistory{UserId: user.UserId, Event: event}
+		if err = rows.Scan(&data.EventDate, &data.SegmentName); err != nil {
+			r.logger.Errorf("Something wrong with scanning segmentName from row of SQL-request")
+			return err
+		}
+		history = append(history, data)
 	}
 	if err = rows.Err(); err != nil {
 		r.logger.Errorf("Something wrong with getting rows of SQL-request")
-		return segments, err
+		return err
 	}
-	return segments, nil
+	return nil
 }
 
 func (r repository) DeleteFromSegment(ctx context.Context, user *userinsegment.UserInSegmentDTO) error {
