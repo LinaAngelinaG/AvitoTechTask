@@ -144,4 +144,11 @@ segment необходим для хранения имен сегментов, 
 
 ## Swagger
 
+<img width="1375" alt="Снимок экрана 2023-08-31 в 23 33 18" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/61105804-4b0c-4ed0-a327-82f16d59469f">
+<img width="1376" alt="Снимок экрана 2023-08-31 в 23 34 01" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/6067f50f-3b9d-4678-9729-2e9d5a17af83">
+подробнее запросы:
+<img width="1374" alt="Снимок экрана 2023-08-31 в 23 34 28" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/8b8d6449-7976-476b-b8a7-5696895c1942">
+<img width="1371" alt="Снимок экрана 2023-08-31 в 23 34 51" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/3c34beb5-281d-4c4f-89de-ec56f26ca953">
+
+
 
