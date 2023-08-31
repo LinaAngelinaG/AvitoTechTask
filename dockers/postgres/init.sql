@@ -1,0 +1,2 @@
+CREATE USER postgres1 with PASSWORD '3846936720';
+CREATE DATABASE avito_tech_task WITH OWNER = postgres1;

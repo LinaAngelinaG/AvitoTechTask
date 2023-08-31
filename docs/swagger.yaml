@@ -1,0 +1,228 @@
+basePath: /
+definitions:
+  userinsegment.UserInSegmentsHistory:
+    properties:
+      event:
+        type: string
+      event_date:
+        type: string
+      segment_name:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  userinsegment.UserSegmentsList:
+    properties:
+      period:
+        type: integer
+      segment_list:
+        items:
+          type: string
+        type: array
+      user_id:
+        type: integer
+    type: object
+host: localhost:1234
+info:
+  contact: {}
+  description: API Server for AvitoTechTask Application
+  title: AvitoTechTask App API
+  version: "1.0"
+paths:
+  /history/:uid/:year/:month:
+    get:
+      consumes:
+      - application/json
+      description: 'Returns the link to download the CSV-file with history of all
+        user''s activities in segments: adding or deleting in period of seted month
+        and the year.'
+      operationId: get-history-of-user
+      parameters:
+      - description: USER_ID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: YEAR
+        in: path
+        name: year
+        required: true
+        type: integer
+      - description: MONTH
+        in: path
+        name: month
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: got list of segments
+          schema:
+            items:
+              $ref: '#/definitions/userinsegment.UserInSegmentsHistory'
+            type: array
+        "400":
+          description: there is no 'parameter_name' in context or it's wrong value
+          schema:
+            type: string
+        "418":
+          description: error with getting history
+          schema:
+            type: string
+      summary: GetUserHistory
+      tags:
+      - user_in_segment
+  /segment/:name:
+    delete:
+      consumes:
+      - application/json
+      description: 'Delete segment with its name that is sent as parameter of http-request.
+        Don''t phisically delete segment, just set its parameter ''active'' from value
+        ''true'' to ''false''. Also delete users from that segment: change null-values
+        of ''out_date'' in table user_in_segment to current_date.'
+      operationId: delete-segment
+      parameters:
+      - description: SEGMENT NAME
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: segment deleted from users
+          schema:
+            type: string
+        "400":
+          description: Something wrong with deleting segment
+          schema:
+            type: string
+      summary: DeleteSegment
+      tags:
+      - segment
+    post:
+      consumes:
+      - application/json
+      description: Create segment with its name that is sent as parameter of http-request.
+        'segment_id' is autoinremented in DB while inserting, 'active' set to default
+        value 'true'.
+      operationId: delete-segment
+      parameters:
+      - description: SEGMENT NAME
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: segment created
+          schema:
+            type: string
+        "400":
+          description: there is no segment_name in context
+          schema:
+            type: string
+        "418":
+          description: error with creating entity example
+          schema:
+            type: string
+      summary: CreateSegment
+      tags:
+      - segment
+  /user/:uid:
+    get:
+      consumes:
+      - application/json
+      description: 'Provide JSON with values {"userId": someId, "segments":[''seg_name_1'',''seg_name_2'',...]]},
+        that contains pare of user_id and all active segments of this user.'
+      operationId: get-list-of-user-segments
+      parameters:
+      - description: USER_ID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/userinsegment.UserSegmentsList'
+        "400":
+          description: there is no user_id in context or its wrong value
+          schema:
+            type: string
+        "405":
+          description: error with marshalling list of segments
+          schema:
+            type: string
+        "418":
+          description: error with getting list of segments
+          schema:
+            type: string
+      summary: GetListOfSegments
+      tags:
+      - user_in_segment
+  /user/segments:
+    delete:
+      consumes:
+      - application/json
+      description: Iterates throuth the list of sent segment_names and delete each
+        of row that have such user_id value and segment_id value. Not literally delete,
+        but update value 'out_date' to current_date if it's null.
+      operationId: delete-user_in_segment
+      parameters:
+      - description: SEGMENTS LIST FOR USER
+        in: body
+        name: segments
+        required: true
+        schema:
+          $ref: '#/definitions/userinsegment.UserSegmentsList'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user deleted from segments
+          schema:
+            type: string
+        "400":
+          description: Something wrong with deleting segment
+          schema:
+            type: string
+      summary: DeleteListOfSegments
+      tags:
+      - user_in_segment
+    post:
+      consumes:
+      - application/json
+      description: Create new user_in_segment sequence with provided data, only if
+        provided segment exists. If body contains 'period' value - creating user_in_segment
+        sequence with out_date = current_date + period.
+      operationId: add-segments-to-user
+      parameters:
+      - description: SEGMENTS LIST FOR USER
+        in: body
+        name: segments
+        required: true
+        schema:
+          $ref: '#/definitions/userinsegment.UserSegmentsList'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: segments added to user
+          schema:
+            type: string
+        "400":
+          description: Something wrong with addding segment
+          schema:
+            type: string
+      summary: AddUserSegments
+      tags:
+      - user_in_segment
+swagger: "2.0"

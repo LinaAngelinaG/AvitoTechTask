@@ -3,6 +3,7 @@ package configuration
 import (
 	"AvitoTechTask/pkg/logging"
 	"github.com/ilyakaznacheev/cleanenv"
+	"os"
 	"sync"
 )
 
@@ -34,6 +35,14 @@ func GetConfig(logger *logging.Logger) *Config {
 			logger.Info(needDeb)
 			logger.Fatal(err)
 		}
+		instance.Storage.Password = getEnv("DB_PASSWORD", "")
 	})
 	return instance
+}
+
+func getEnv(key string, defaultVal string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return defaultVal
 }

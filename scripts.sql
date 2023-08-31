@@ -29,6 +29,8 @@ SELECT segment_name FROM (SELECT segment_id AS s_id
     INNER JOIN segment ON s_id = segment.segment_id;
 
 
+
+
 INSERT INTO user_in_segment(user_id, segment_id, in_date, out_date)
 VALUES ($1, (SElECT segment_id FROM segment WHERE segment_name = $2),
         current_timestamp, DEFAULT);

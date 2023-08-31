@@ -10,7 +10,7 @@ const (
 	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
-	password = "3846936720"
+	password = ""
 	dbname   = "dogcare"
 )
 
@@ -52,15 +52,6 @@ func createIndexes(db *sql.DB) {
 	_, err := db.Exec("CREATE INDEX IF NOT EXISTS out_date_idx ON user_in_segment (out_date)")
 	checkError(err)
 }
-
-//func createTriggers(db *sql.DB) {
-//	_, err := db.Exec("CREATE TABLE IF NOT EXISTS segment (" +
-//		"segment_id integer NOT NULL, " +
-//		"segment_name varchar(50) NOT NULL UNIQUE, " +
-//		"PRIMARY KEY(segment_id)" +
-//		")")
-//	checkError(err)
-//}
 
 func checkError(err error) {
 	if err != nil {

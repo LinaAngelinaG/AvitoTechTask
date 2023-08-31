@@ -29,6 +29,17 @@ func (h *handler) Register(router *httprouter.Router) {
 	router.POST(segmentURL, h.CreateSegment)
 }
 
+// @Summary DeleteSegment
+// @Tags segment
+// @Description Delete segment with its name that is sent as parameter of http-request. Don't phisically delete segment, just set its parameter 'active' from value 'true' to 'false'. Also delete users from that segment: change null-values of 'out_date' in table user_in_segment to current_date.
+// @ID delete-segment
+// @Accept  json
+// @Produce  json
+// @Param name path string true "SEGMENT NAME"
+// @Success 200 {string}  string "segment deleted from users"
+// @Failure 400 {string}  string "there is no segment_name in context"
+// @Failure 400 {string}  string "Something wrong with deleting segment"
+// @Router /segment/:name [delete]
 func (h *handler) DeleteSegment(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	name := params.ByName("name")
 	if name == "" {
@@ -48,6 +59,17 @@ func (h *handler) DeleteSegment(w http.ResponseWriter, r *http.Request, params h
 	w.Write([]byte("segment deleted from users"))
 }
 
+// @Summary CreateSegment
+// @Tags segment
+// @Description Create segment with its name that is sent as parameter of http-request. 'segment_id' is autoinremented in DB while inserting, 'active' set to default value 'true'.
+// @ID delete-segment
+// @Accept  json
+// @Produce  json
+// @Param name path string true "SEGMENT NAME"
+// @Success 201 {string}  string "segment created"
+// @Failure 400 {string}  string "there is no segment_name in context"
+// @Failure 418 {string}  string "error with creating entity example"
+// @Router /segment/:name [post]
 func (h *handler) CreateSegment(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	name := params.ByName("name")
 	if name == "" {

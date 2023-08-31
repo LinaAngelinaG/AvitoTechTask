@@ -33,6 +33,7 @@ func NewClient(ctx context.Context, attempsVal int, cnf *configuration.Config) (
 		break
 	}
 	if err != nil {
+		log.Println(err)
 		log.Fatal("impossible to connect to postgresql")
 	}
 	return pool, nil
