@@ -78,42 +78,63 @@ segment необходим для хранения имен сегментов, 
 ```
 Добавим пользователю 1000 этот сегмент
 ``` 
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/68829186-3bb9-412c-8334-61bcf0b5583f)
 
 ```
 Получим список активных сегментов пользователя 1000
 ``` 
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/851a8f40-7909-4cf0-b177-1fa1b2dd1237)
 
 ```
 Получим список активных сегментов несущетсвующего в БД пользователя 10001
 ``` 
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/bc478f1c-c455-4ad6-a00e-25086f664c2a)
 
 ```
-Удалим несуществующий сегмент
+Удалим несуществующий сегмент с имененм AVITO_25
 ``` 
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/27ef026f-f2a5-4c1c-a098-4a63b15510f6)
 
 ```
 Получим историю пользователя 1000
-``` 
+```
+Внимание! Это JSON из REsponseWriter-а, ниже будет скрин файла, который автоматически загружается при запуске этого GET-запроса в браузере, POSTMAN не позволяет сразу это увидеть. 
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/da73abb1-d5c1-4b2e-9e9e-6bbaf5028ec6)
 
 
 ```
 Удалим добавленный сегмент пользователя 1000 
 ``` 
 (именно сегмент, а не пользователя из сегмента, то есть поменяется значение "active" для сегмента и не только)
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/fd135e67-cbca-4976-8ca4-035874b8d0db)
 
 
 ```
 Снова получим историю пользователя 1000
 ``` 
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/2448f3fd-367f-44c3-8251-8016248232c6)
 
 ```
 Снова получим список активных сегментов пользователя 1000
 ``` 
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/1c136aaa-e41e-423e-889e-b66d420c021f)
 
 ```
 Проделаем аналогичные операции, только с бОльшим кол-вом пользователей и сегментов
 ``` 
 Кроме того, посмотрим на историю так, как она выглядит в скачанном CSV-файле, а не в JSON-ответе, полученном из ResponseWriter-а.
+```
+Данные о сегментах и пользователях уже добавлены в соответствующие таблиццы
+```
+приведены последовательные запросы:
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/c9062b56-49c7-4c60-946b-580460c2da7d)
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/79fd16c9-48ea-44ca-b20e-2cc70c17cd77)
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/c731fa82-aac5-4c5e-ae66-5368e99ac1f8)
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/db55cbb4-c1b4-47c1-bde4-02346d3b4576)
+
+Как выглядят данные в скачанном СSV-файле::
+
+<img width="348" alt="Снимок экрана 2023-08-31 в 23 31 06" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/bf4e5337-ff38-494d-a52a-402b4d50167f">
 
 
 ## Возникшие проблемы
