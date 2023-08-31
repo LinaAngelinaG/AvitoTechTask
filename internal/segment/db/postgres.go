@@ -67,7 +67,7 @@ func (r *repository) deleteFromUsers(ctx context.Context, segment *segment.Segme
 	q := `
 		UPDATE user_in_segment
 		SET out_date = current_timestamp
-		WHERE segment_id = $1 AND out_date is null
+		WHERE segment_id = $1 AND (out_date is null or out_date >current_timestamp)
 		`
 	r.logger.Tracef("SQL query: %s", QueryToString(q))
 	if _, err := r.client.Query(ctx, q, segment.SegmentId); err != nil {

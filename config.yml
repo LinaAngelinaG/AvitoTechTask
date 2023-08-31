@@ -5,10 +5,8 @@ listen:
   bind_ip: 0.0.0.0
   port: 1234
 storage:
-#  host: "localhost"
   host: "db"
   port: 5432
   username: "postgres1"
   database: "avito_tech_task"
   Password: 3846936720
-#  database: "avitotechTask"

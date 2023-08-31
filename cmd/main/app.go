@@ -15,7 +15,6 @@ import (
 	"github.com/jackc/pgconn"
 	"github.com/joho/godotenv"
 	"github.com/julienschmidt/httprouter"
-	httpSwagger "github.com/swaggo/http-swagger"
 	"log"
 	"net"
 	"net/http"
@@ -72,13 +71,13 @@ func initDB() error {
 	q2 := `
 	CREATE TABLE IF NOT EXISTS user_in_segment (
 	   user_id serial NOT NULL,
-	   segment_id integer NOT NULL REFERENCES segment (segment_id)
+	   segment_id serial NOT NULL REFERENCES segment (segment_id)
 		   ON DELETE RESTRICT ON UPDATE RESTRICT,
 	   in_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	   out_date TIMESTAMP WITH TIME ZONE DEFAULT NULL
+	   out_date TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+	   primary key (user_id, segment_id)
 	);
 	`
-	q3 := `CREATE INDEX IF NOT EXISTS out_date_idx ON user_in_segment (out_date);`
 	postgreSQLClient, err := postgresql.NewClient(context.TODO(), 3, config)
 	if err != nil {
 		logger.Fatalf("%v", err)
@@ -93,14 +92,6 @@ func initDB() error {
 	}
 	logger.Info("Table ")
 	if _, err := postgreSQLClient.Query(context.TODO(), q2); err != nil {
-		if pgErr, ok := err.(*pgconn.PgError); ok {
-			logger.Errorf("SQL error: %s, details: %s, where: %s, code: %s, SQL-state: %s",
-				pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
-			return nil
-		}
-		return err
-	}
-	if _, err := postgreSQLClient.Query(context.TODO(), q3); err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			logger.Errorf("SQL error: %s, details: %s, where: %s, code: %s, SQL-state: %s",
 				pgErr.Message, pgErr.Detail, pgErr.Where, pgErr.Code, pgErr.SQLState())
@@ -127,11 +118,10 @@ func registerHandlers() {
 
 	segmentHandler = segment.NewHandler(logger, segRepo)
 	segmentHandler.Register(router)
+
 }
 
 func start() {
-	logger.Info("start swagger-doc")
-	router.GET("/doc/swagger.json", swaggerHandler)
 
 	logger.Info("start application")
 
@@ -149,8 +139,4 @@ func start() {
 	}
 	logger.Info("server is listening port %s:%s", config.Listen.BindIp, config.Listen.Port)
 	log.Fatal(server.Serve(listener))
-}
-
-func swaggerHandler(res http.ResponseWriter, req *http.Request, p httprouter.Params) {
-	httpSwagger.WrapHandler(res, req)
 }

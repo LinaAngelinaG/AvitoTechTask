@@ -84,7 +84,7 @@ func (r repository) DeleteFromSegment(ctx context.Context, user *userinsegment.U
           AND segment_id = (SELECT segment_id
                               FROM segment
                               WHERE segment_name = $2) 
-          AND out_date IS NULL
+          AND (out_date IS NULL OR out_date > current_timestamp)
 		`
 
 	r.logger.Tracef("SQL query: %s", segmentdb.QueryToString(q))
@@ -139,20 +139,20 @@ func (r repository) AddSegmentsWithPeriod(ctx context.Context, user *userinsegme
 	return nil
 }
 
-func (r repository) GetSegments(ctx context.Context, user *userinsegment.UserInSegment) (userinsegment.UserSegmentsList, error) {
+func (r repository) GetSegments(ctx context.Context, user *userinsegment.UserInSegment) (userinsegment.UserSegmentsListDTO, error) {
 	q := `
 		SELECT segment_name 
 		FROM (SELECT segment_id AS s_id
 		      FROM user_in_segment
 			  WHERE user_id = $1
 			    AND (out_date IS NULL
-			             OR out_date > current_date)
+			             OR out_date > current_timestamp)
 			  ) AS active_u_segments
 		    INNER JOIN segment ON s_id = segment.segment_id
 		`
 	r.logger.Tracef("SQL query: %s", segmentdb.QueryToString(q))
 	rows, err := r.client.Query(ctx, q, user.UserId)
-	segments := userinsegment.UserSegmentsList{UserId: user.UserId, SegmentNames: []string{}}
+	segments := userinsegment.UserSegmentsListDTO{UserId: user.UserId, SegmentNames: []string{}}
 	if err != nil {
 		return segments, err
 	}

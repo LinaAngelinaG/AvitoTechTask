@@ -1,3 +1,20 @@
+###
+GET http://localhost:1234/user/1
+Accept: application/json
+
+> {%
+    client.test("Request executed successfully", function (){
+        client.assert(response.status == 200, "Response status is not 200")
+        client.assert(response.body.hasOwnProperty("user_id") , "Response")
+        // client.log(response.body, response.body[0])
+        client.assert(response.body ==
+            {
+                "user_id": 1,
+                "segment_list": []
+            },
+            "Wrong answer")
+    })
+%}
 
 ###
 POST http://localhost:1234/user/segments/10
@@ -17,7 +34,7 @@ Accept: application/json
 > {%
     client.test("Request executed successfully", function (){
         client.assert(response.status == 200, "Response status is not 200")
-        client.assert(response.body == {segment_list:"cw"}, "Wrong answer")
+        client.assert(response.body == {user_id:1,segment_list:[]}, "Wrong answer")
     })
 %}
 ###
@@ -41,12 +58,38 @@ Content-Type: application/json
 
 > {%
     client.test("Request executed successfully", function (){
-        client.assert(response.status == 204, "Response status is not 204")
+        client.assert(response.status == 200, "Response status is not 200")
+        client.assert(response.body == "segment deleted from users", "Response body is not \"segment deleted from users\"")
     })
 %}
 ###
 
-POST http://localhost:1234/segment/AVITO_VOICE_MESSAGES
+DELETE http://localhost:1234/segment/AVITO_VOICE_MESSAGES_2
+Content-Type: application/json
+
+{}
+
+> {%
+    client.test("Request executed successfully", function (){
+        client.assert(response.status == 400, "Response status is not 400")
+        client.assert(response.body == "Something wrong with deleting segment", "Response body is not \"Something wrong with deleting segment\"")
+    })
+%}
+###
+
+DELETE http://localhost:1234/segment/
+Content-Type: application/json
+
+{}
+
+> {%
+    client.test("Request executed successfully", function (){
+        client.assert(response.status == 404, "Response status is not 404")
+    })
+%}
+###
+
+POST http://localhost:1234/segment/AVITO_SEG_TEST_2
 Content-Type: application/json
 
 {}
@@ -54,6 +97,19 @@ Content-Type: application/json
 > {%
     client.test("Request executed successfully", function (){
         client.assert(response.status == 201, "Response status is not 201")
+        client.assert(response.body == "segment created", "Response body is not \"segment created\"")
+    })
+%}
+###
+
+POST http://localhost:1234/segment/
+Content-Type: application/json
+
+{}
+
+> {%
+    client.test("Request executed successfully", function (){
+        client.assert(response.status == 404, "Response status is not 404")
     })
 %}
 ###

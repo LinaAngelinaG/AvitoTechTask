@@ -23,6 +23,11 @@ type UserSegmentsList struct {
 	Period       int      `json:"period"`
 }
 
+type UserSegmentsListDTO struct {
+	UserId       int      `json:"user_id"`
+	SegmentNames []string `json:"segment_list"`
+}
+
 type UserInSegmentsHistory struct {
 	UserId      int    `json:"user_id"`
 	SegmentName string `json:"segment_name"`
