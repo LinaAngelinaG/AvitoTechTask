@@ -149,6 +149,18 @@ segment необходим для хранения имен сегментов, 
 подробнее запросы:
 <img width="1374" alt="Снимок экрана 2023-08-31 в 23 34 28" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/8b8d6449-7976-476b-b8a7-5696895c1942">
 <img width="1371" alt="Снимок экрана 2023-08-31 в 23 34 51" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/3c34beb5-281d-4c4f-89de-ec56f26ca953">
+<img width="1371" alt="Снимок экрана 2023-08-31 в 23 35 39" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/d000bd6b-8a76-4a9f-b7e1-4874ed7ad589">
+<img width="1366" alt="Снимок экрана 2023-08-31 в 23 36 02" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/f6e65dc0-60bc-485c-9710-9c9df6612397">
+<img width="1371" alt="Снимок экрана 2023-08-31 в 23 36 18" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/8585e014-1fd7-469a-977f-a19a4a1baf44">
+<img width="1376" alt="Снимок экрана 2023-08-31 в 23 36 33" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/dfec332b-47dc-426b-9263-1c28772bcc6d">
+<img width="1373" alt="Снимок экрана 2023-08-31 в 23 36 50" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/2c658e7d-b631-44e7-b484-a01968922369">
+<img width="1373" alt="Снимок экрана 2023-08-31 в 23 37 15" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/71bc8aad-de4d-4028-ab37-75313885dd72">
+
+<img width="1368" alt="Снимок экрана 2023-08-31 в 23 37 33" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/5db10730-51b4-41d5-97da-ba4d3566e579">
+<img width="1366" alt="Снимок экрана 2023-08-31 в 23 37 51" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/f4e319e7-6a33-402b-85c4-0df6810222e3">
+<img width="1368" alt="Снимок экрана 2023-08-31 в 23 38 17" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/a4119614-3e51-4e90-9c71-77daa36df792">
+<img width="1377" alt="Снимок экрана 2023-08-31 в 23 38 30" src="https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/623a1f42-ead6-42ec-9fc0-bb5d63a157cd">
+
 
 
 
