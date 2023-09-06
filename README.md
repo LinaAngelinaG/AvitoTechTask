@@ -15,6 +15,8 @@
 - База данных PostgreSQL
 - Два docker-контейнера
 - Запросы: JSON-формат
+- Конфигурация: ilyakaznacheev/cleanenv
+- Логирование: sirupsen/logrus
 
 ## Запуск проекта
 Все, что нужно для запуска приложения: скачать файл docker-compose и, находясь в директории с этим файлом, запустить в командной строке:
@@ -72,7 +74,22 @@ segment необходим для хранения имен сегментов, 
 
 ```
 Добавим сегмент в его таблицу 
-``` 
+```
+```sh
+POST
+http://localhost:1234/segment/:name
+
+input:
+        {
+            name (string in params)
+        }
+output: 
+        {
+            HTTP-code (int)
+            answer (string)
+        } 
+```
+
 ![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/582f7cd9-daf2-4c3d-9266-18d20f1396a2)
 
 ```
