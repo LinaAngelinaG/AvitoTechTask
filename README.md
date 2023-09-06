@@ -79,62 +79,151 @@ segment необходим для хранения имен сегментов, 
 POST
 http://localhost:1234/segment/:name
 
-input:
-        {
-            name (string in params)
-        }
+input: 
+    name (string in params)
+        
 output: 
-        {
-            HTTP-code (int)
-            answer (string)
-        } 
+    HTTP-code (int in header of responseWriter)
+    answer (string) 
 ```
 
 ![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/582f7cd9-daf2-4c3d-9266-18d20f1396a2)
 
 ```
 Добавим пользователю 1000 этот сегмент
-``` 
+```
+```sh
+POST
+http://localhost:1234/user/segments
+input:
+        {
+            "user_id":1000,
+            "segment_list":["AVITO_1","AVITO_3","AVITO_4"]
+        }
+output: 
+            HTTP-code (int)
+            answer (string)
+```
 ![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/68829186-3bb9-412c-8334-61bcf0b5583f)
 
 ```
 Получим список активных сегментов пользователя 1000
-``` 
-![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/851a8f40-7909-4cf0-b177-1fa1b2dd1237)
-
+```
+```sh
+GET
+http://localhost:1234/user/:uid
+http://localhost:1234/user/1000
+input:
+        uid (int in params)
+output: 
+       {
+            "user_id":1000,
+            "segment_list":["AVITO_1","AVITO_3","AVITO_4"]
+        }
+```
 ```
 Получим список активных сегментов несущетсвующего в БД пользователя 10001
-``` 
-![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/bc478f1c-c455-4ad6-a00e-25086f664c2a)
+```
+```sh
+GET
+http://localhost:1234/user/:uid
+http://localhost:1234/user/10001
+input:
+        uid (int in params)
+output: 
+       {
+            "user_id":10001,
+            "segment_list":[]
+        }
+```
 
 ```
 Удалим несуществующий сегмент с имененм AVITO_25
 ``` 
-![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/27ef026f-f2a5-4c1c-a098-4a63b15510f6)
-
+```sh
+DELETE
+http://localhost:1234/segment/:name
+http://localhost:1234/segment/AVITO_25
+input:
+        name (string in params)
+output: 
+        HTTP-code (int)
+        answer (string)
+```
 ```
 Получим историю пользователя 1000
 ```
-Внимание! Это JSON из REsponseWriter-а, ниже будет скрин файла, который автоматически загружается при запуске этого GET-запроса в браузере, POSTMAN не позволяет сразу это увидеть. 
-![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/da73abb1-d5c1-4b2e-9e9e-6bbaf5028ec6)
-
+ниже будет скрин CSV-файла, который автоматически загружается при запуске этого GET-запроса в браузере, POSTMAN не позволяет сразу это увидеть. 
+```sh
+GET
+http://localhost:1234/history/:uid/:year/:month
+http://localhost:1234/history/1000/2023/08
+input:
+        uid (int in params)
+        year (int in params)
+        month (int in params)
+output:
+       {
+                UserId,SegmentName,Event,EventDate
+                1000,AVITO_1,inserted,2023/08/31 19:03:33
+                1000,AVITO_3,inserted,2023/08/31 19:03:33
+                1000,AVITO_4,inserted,2023/08/31 19:03:33
+        }
+```
 
 ```
 Удалим добавленный сегмент пользователя 1000 
 ``` 
-(именно сегмент, а не пользователя из сегмента, то есть поменяется значение "active" для сегмента и не только)
-![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/fd135e67-cbca-4976-8ca4-035874b8d0db)
+(именно сегмент, а не пользователя из сегмента, то есть поменяется значение "active" для сегмента и значения out_date для пользователей в этом сегменте)
+```sh
+DELETE
+http://localhost:1234/segment/:name
+http://localhost:1234/segment/AVITO_1
+input:
+        name (string in params)
+output: 
+        HTTP-code (int)
+        answer (string)
+```
 
+![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/fd135e67-cbca-4976-8ca4-035874b8d0db)
 
 ```
 Снова получим историю пользователя 1000
 ``` 
-![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/2448f3fd-367f-44c3-8251-8016248232c6)
+```sh
+GET
+http://localhost:1234/history/:uid/:year/:month
+http://localhost:1234/history/1000/2023/08
+input:
+        uid (int in params)
+        year (int in params)
+        month (int in params)
+output:
+       {
+                UserId,SegmentName,Event,EventDate
+                1000,AVITO_1,inserted,2023/08/31 19:03:33
+                1000,AVITO_3,inserted,2023/08/31 19:03:33
+                1000,AVITO_4,inserted,2023/08/31 19:03:33
+                1000,AVITO_3,deleted,2023/08/31 19:04:22
+        }
+```
 
 ```
 Снова получим список активных сегментов пользователя 1000
-``` 
-![image](https://github.com/LinaAngelinaG/AvitoTechTask/assets/61655484/1c136aaa-e41e-423e-889e-b66d420c021f)
+```
+```sh
+GET
+http://localhost:1234/user/:uid
+http://localhost:1234/user/1000
+input:
+        uid (int in params)
+output: 
+       {
+            "user_id":1000,
+            "segment_list":["AVITO_1","AVITO_4"]
+        }
+```
 
 ```
 Проделаем аналогичные операции, только с бОльшим кол-вом пользователей и сегментов
